@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Text, Heading, useTheme, useToken, useStyleConfig } from '@chakra-ui/react';
 import { createStyleObject } from '@capsizecss/core';
 import memoizeOne from 'memoize-one';

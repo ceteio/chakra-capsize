@@ -44,9 +44,11 @@
     "@chakra-ui/react": "^1.7.1",
     "@changesets/cli": "^2.18.1",
     "@preconstruct/cli": "^2.1.5",
-    "np": "^7.6.0"
+    "np": "^7.6.0",
+    "react": "^16.7.0"
   },
   "peerDependencies": {
-    "@chakra-ui/react": "^1.7.1"
+    "@chakra-ui/react": "^1.7.1",
+    "react": "^16.7.0"
   }
 }
