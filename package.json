@@ -18,6 +18,10 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ceteio/chakra-capsize.git"
+  },
   "scripts": {
     "build": "preconstruct build",
     "release": "yarn build && changeset version && echo \"Note the new version in package.json, revert the change there, commit the changelog, then run 'yarn np'\""
