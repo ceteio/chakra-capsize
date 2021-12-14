@@ -1,7 +1,6 @@
 {
   "name": "@ceteio/chakra-capsize",
   "version": "0.0.0",
-  "private": true,
   "description": "Chakra Text & Heading components with whitespace trimmed",
   "main": "dist/ceteio-chakra-capsize.cjs.js",
   "module": "dist/ceteio-chakra-capsize.esm.js",
@@ -16,7 +15,8 @@
     "LICENSE"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "build": "preconstruct build",
