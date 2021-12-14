@@ -1,6 +1,6 @@
 {
   "name": "@ceteio/chakra-capsize",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Chakra Text & Heading components with whitespace trimmed",
   "main": "dist/ceteio-chakra-capsize.cjs.js",
   "module": "dist/ceteio-chakra-capsize.esm.js",
