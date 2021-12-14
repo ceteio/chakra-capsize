@@ -1,0 +1,48 @@
+{
+  "name": "@ceteio/chakra-capsize",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Chakra Text & Heading components with whitespace trimmed",
+  "main": "dist/ceteio-chakra-capsize.cjs.js",
+  "module": "dist/ceteio-chakra-capsize.esm.js",
+  "author": "Jess Telford <jess@cete.io>",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "theme",
+    "CHANGELOG.md",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "preconstruct build",
+    "release": "yarn build && changeset version && echo \"Note the new version in package.json, revert the change there, commit the changelog, then run 'yarn np'\""
+  },
+  "preconstruct": {
+    "entrypoints": [
+      "index.js",
+      "theme.js"
+    ]
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.15.4",
+    "@capsizecss/core": "^3.0.0",
+    "lodash": "^4.17.21",
+    "memoize-one": "^6.0.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.5",
+    "@babel/preset-react": "^7.16.5",
+    "@chakra-ui/react": "^1.7.1",
+    "@changesets/cli": "^2.18.1",
+    "@preconstruct/cli": "^2.1.5",
+    "np": "^7.6.0"
+  },
+  "peerDependencies": {
+    "@chakra-ui/react": "^1.7.1"
+  }
+}
