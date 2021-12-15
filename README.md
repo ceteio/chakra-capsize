@@ -8,7 +8,7 @@
   </p>
   <p>
     <sup>
-      <a href="https://githubbox.com/ceteio/chakra-capsize/tree/main/example">Try it on Codesandbox</a>
+      <a href="https://githubbox.com/ceteio/chakra-capsize/tree/main/example" target="_blank">Try it on Codesandbox</a>
     </sup>
   </p>
     <br>
