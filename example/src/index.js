@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 
 import { withCappedText } from '@ceteio/chakra-capsize/theme'
 import { CappedText, CappedHeading } from '@ceteio/chakra-capsize'
-import { Stack, ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { Stack, Link, ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 // Grab metrics about the Roboto font face
 import robotoFontMetrics from '@capsizecss/metrics/roboto';
@@ -54,6 +54,11 @@ const App = () => {
           the lineGap + capHeight of each &lt;CappedHeading&gt;
           &amp; &lt;CappedText&gt; to get a feel for how things
           fit together.
+        </CappedText>
+        <CappedText capHeight="sm">
+          <Link href="https://github.com/ceteio/chakra-capsize">
+            https://github.com/ceteio/chakra-capsize
+          </Link>
         </CappedText>
       </Stack>
     </ChakraProvider>
