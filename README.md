@@ -1,9 +1,20 @@
-<p align="center">
-  <img src="./img/logo.png">
-  <p align="center"><p>
-  <h1 align="center">Chakra Capsize</h1>
-  <p align="center">The power of <a href="https://seek-oss.github.io/capsize/">Capsize</a> inside <a href="https://chakra-ui.com/">Chakra UI</a><p>
-</p>
+<div align="center">
+  <img width="500" src="./img/logo.png" alt="chakra + capsize">
+  <br>
+  <br>
+  <br>
+  <p>
+    The power of <a href="https://seek-oss.github.io/capsize/">Capsize</a> inside <a href="https://chakra-ui.com/">Chakra UI</a>
+  </p>
+  <p>
+    <sup>
+      <a href="https://githubbox.com/ceteio/chakra-capsize/tree/main/example">Try it on Codesandbox</a>
+    </sup>
+  </p>
+    <br>
+  <br>
+  <br>
+</div>
 
 ```
 yarn add @ceteio/chakra-capsize
