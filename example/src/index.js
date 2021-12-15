@@ -8,9 +8,6 @@ import { Stack, ChakraProvider, extendTheme } from "@chakra-ui/react";
 // Grab metrics about the Roboto font face
 import robotoFontMetrics from '@capsizecss/metrics/roboto';
 
-// Sets up our Roboto font file
-import "@fontsource/roboto";
-
 const theme = extendTheme(
   {
     fonts: {
@@ -34,6 +31,9 @@ const theme = extendTheme(
 const App = () => {
   return (
     <ChakraProvider theme={theme}>
+      {/* Load our font. Normally this would be done in an
+      app-level location, not directly in your component */}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto" />
       <Stack spacing={12} sx={{ margin: '20px auto', maxWidth: '2xl' }}>
         <CappedHeading as="h1" size="xl">
           @ceteio/chakra-capsize Example
