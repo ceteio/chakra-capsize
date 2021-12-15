@@ -1,5 +1,11 @@
 # @ceteio/chakra-capsize
 
+## 1.1.0
+
+### Minor Changes
+
+- e590a56: Added an example project in `example/`
+
 ## 1.0.1
 
 ### Patch Changes
