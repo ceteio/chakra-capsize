@@ -332,3 +332,15 @@ this default to `16px`, and `chakra-capsize` does too.
 
 You should only ever need to set this if you explicitly change the `font-size`
 of the `html` element.
+
+## Frequently Asked Questions
+
+### Why are descenders cut off when using `isTruncated` or `noOfLines`?
+
+To fix it, add a `lineGap` that is at least the height of the descenders.
+
+This occurs due to `chakra-capsize`s default of `lineGap = 0` which instructs
+capsize to set the container to be the same height as a capital letter. Then
+when `isTruncated` sets `overflow: hidden`, the ascenders & descenders are cut
+off. By setting a `lineGap` (or `leading` or `lineHeight`), the height of the
+container is increased to stop the cut off while maintaining the correct
