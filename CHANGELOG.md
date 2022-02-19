@@ -1,5 +1,15 @@
 # @ceteio/chakra-capsize
 
+## 1.2.0
+
+### Minor Changes
+
+- 350ff0f: Forward refs to the underlaying DOM nodes
+
+### Patch Changes
+
+- c1c94ae: Fix example font loading on codesandbox
+
 ## 1.1.0
 
 ### Minor Changes
