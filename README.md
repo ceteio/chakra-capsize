@@ -23,17 +23,17 @@ yarn add @ceteio/chakra-capsize
 **Usage**
 
 ```javascript
-import { withCappedText } from '@ceteio/chakra-capsize/theme'
-import { CappedText, CappedHeading } from '@ceteio/chakra-capsize'
+import { withCappedText } from "@ceteio/chakra-capsize/theme";
+import { CappedText, CappedHeading } from "@ceteio/chakra-capsize";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import robotoFontMetrics from '@capsizecss/metrics/roboto';
+import robotoFontMetrics from "@capsizecss/metrics/roboto";
 
 const theme = extendTheme(
   defaultTheme,
   {
     fonts: {
-      heading: 'Roboto',
-      body: 'Roboto',
+      heading: "Roboto",
+      body: "Roboto"
     },
     capHeights: {
       sm: 10,
@@ -53,22 +53,22 @@ const App = () => {
   return (
     <ChakraProvider theme={theme}>
       <div>
-        <CappedHeading as="h1" size="2xl">Hi!</CappedHeading>
+        <CappedHeading as="h1" size="2xl">
+          Hi!
+        </CappedHeading>
         <CappedText>
-          This paragraph will have surrounding whitespace
-          trimmed. It will also have space between the lines
-          of text reduced to 0.
+          This paragraph will have surrounding whitespace trimmed. It will also
+          have space between the lines of text reduced to 0.
         </CappedText>
         <CappedText capHeight="lg" lineGap={4}>
-          Setting a capHeight overrides any fontSize prop for
-          more exact sizing.  Meanwhile, a lineGap uses the
-          Chakra 'spacings' scale to insert space between
-          lines of text just like any other Chakra element.
+          Setting a capHeight overrides any fontSize prop for more exact sizing.
+          Meanwhile, a lineGap uses the Chakra 'spacings' scale to insert space
+          between lines of text just like any other Chakra element.
         </CappedText>
       </div>
     </ChakraProvider>
   );
-}
+};
 ```
 
 ## Theming
@@ -151,7 +151,7 @@ const theme = {
     lg: 14
     // ...
   }
-}
+};
 ```
 
 Then the corresponding values can be passed either directly to a `<CappedText>`
@@ -169,12 +169,12 @@ const theme = {
     Text: {
       variants: {
         huge: {
-          capHeight: '2xl'
+          capHeight: "2xl"
         }
       }
     }
   }
-}
+};
 ```
 
 #### Space between lines
@@ -218,7 +218,7 @@ const theme = {
       }
     }
   }
-}
+};
 ```
 
 ## `<CappedText>` & `<CappedHeading>`
@@ -278,6 +278,13 @@ attempting to set any of `fontSize`, `lineHeight`, `::before`, or `:;after`. It
 is recommended to only set `fontSize` and `lineHeight` via props, and avoid
 setting `::before` or `::after` at all.
 
+#### `truncatedRef`
+
+`<CappedText>` and `<CappedHeading>` can be passed a `ref` to access the React
+DOM node under the hood. However, when either `isTruncated` or `noOfLines` is
+set, an extra inner `<span>` is rendered; to access this inner DOM node, use the
+`truncatedRef` prop.
+
 ## `withCappedText(options)`
 
 ```
@@ -300,7 +307,7 @@ The easiest way to generate font metrics is with the
 package:
 
 ```javascript
-import robotoFontMetrics from '@capsizecss/metrics/roboto';
+import robotoFontMetrics from "@capsizecss/metrics/roboto";
 // ...
 extendTheme(
   withCappedText({

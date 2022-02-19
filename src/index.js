@@ -1,25 +1,31 @@
-import React from 'react';
-import { Box, Text, Heading, useTheme, useToken, useStyleConfig } from '@chakra-ui/react';
-import { createStyleObject } from '@capsizecss/core';
-import memoizeOne from 'memoize-one';
-import deepEqual from 'lodash/isEqual';
-import pickBy from 'lodash/pickBy';
-import omit from 'lodash/omit';
+import React, { forwardRef } from "react";
+import {
+  Box,
+  Text,
+  Heading,
+  useTheme,
+  useToken,
+  useStyleConfig
+} from "@chakra-ui/react";
+import { createStyleObject } from "@capsizecss/core";
+import memoizeOne from "memoize-one";
+import deepEqual from "lodash/isEqual";
+import pickBy from "lodash/pickBy";
+import omit from "lodash/omit";
 
 // From https://github.com/chakra-ui/chakra-ui/blob/684012d868516412e91eb390379ccf7698536345/packages/utils/src/breakpoint.ts#L6
 function analyzeCSSValue(value) {
   const num = parseFloat(value.toString());
-  const unit = value.toString().replace(String(num), '');
+  const unit = value.toString().replace(String(num), "");
   return { unitless: !unit, value: num, unit };
 }
 
-const capHeightToFontSize = ({ capHeight, fontMetrics }) => (
-  capHeight / (fontMetrics.capHeight / fontMetrics.unitsPerEm)
-);
+const capHeightToFontSize = ({ capHeight, fontMetrics }) =>
+  capHeight / (fontMetrics.capHeight / fontMetrics.unitsPerEm);
 
-const getBreakpointKeysArray = memoizeOne(theme => (
+const getBreakpointKeysArray = memoizeOne(theme =>
   Array.from(theme.__breakpoints.keys.values())
-));
+);
 
 const getResponsiveValue = ({ theme, breakpoint, value }) => {
   const breakpointKeys = getBreakpointKeysArray(theme);
@@ -27,9 +33,9 @@ const getResponsiveValue = ({ theme, breakpoint, value }) => {
   for (let i = breakpointKeys.indexOf(breakpoint); i >= 0; i--) {
     if (
       // If there's a value set for the given breakpoint
-      typeof value[breakpointKeys[i]] !== 'undefined'
+      typeof value[breakpointKeys[i]] !== "undefined" &&
       // And that value isn't explicitly 'null'
-      && value[breakpointKeys[i]] !== null
+      value[breakpointKeys[i]] !== null
     ) {
       // We've found our value
       return value[breakpointKeys[i]];
@@ -44,7 +50,7 @@ const detokenize = ({ theme, key, breakpoint, value }) => {
   const concreteValue = getResponsiveValue({ theme, breakpoint, value });
   return concreteValue == null
     ? undefined
-    : (theme[key]?.[concreteValue] ?? concreteValue);
+    : theme[key]?.[concreteValue] ?? concreteValue;
 };
 
 const responsivify = (theme, value) => {
@@ -52,7 +58,7 @@ const responsivify = (theme, value) => {
     return theme.__breakpoints.toObjectValue(value);
   }
 
-  if (typeof value === 'object' && theme.__breakpoints.isResponsive(value)) {
+  if (typeof value === "object" && theme.__breakpoints.isResponsive(value)) {
     return value;
   }
 
@@ -68,46 +74,60 @@ const convertCssToPxValue = ({ theme, value, propName, breakpoint }) => {
   let result;
 
   switch (valueMeta.unit) {
-    case 'rem':
+    case "rem":
       // Convert to a pixel-based size
       result = valueMeta.value * (theme.cappedText?.htmlFontSize ?? 16);
       break;
-    case 'px':
-    case '':
+    case "px":
+    case "":
       result = valueMeta.value;
       break;
     default:
-      throw Error(`Unable to handle ${propName} value. Got ${JSON.stringify(value)}. Expected px or rem value.`);
+      throw Error(
+        `Unable to handle ${propName} value. Got ${JSON.stringify(
+          value
+        )}. Expected px or rem value.`
+      );
   }
 
   return result;
 };
 
-const convertCssToLineheightValue = ({ capSizeConfig, fontMetrics }) =>
-  ({ theme, value, propName, breakpoint }) => {
-    const valueMeta = analyzeCSSValue(value);
-    let result;
+const convertCssToLineheightValue = ({ capSizeConfig, fontMetrics }) => ({
+  theme,
+  value,
+  propName,
+  breakpoint
+}) => {
+  const valueMeta = analyzeCSSValue(value);
+  let result;
 
-    // A raw number or unitless string is a fontSize multiplier
-    if (valueMeta.unitless) {
-      if (capSizeConfig[breakpoint].capHeight) {
-        // calculate the fontSize from the capHeight
-        result = valueMeta.value * capHeightToFontSize({
+  // A raw number or unitless string is a fontSize multiplier
+  if (valueMeta.unitless) {
+    if (capSizeConfig[breakpoint].capHeight) {
+      // calculate the fontSize from the capHeight
+      result =
+        valueMeta.value *
+        capHeightToFontSize({
           capHeight: capSizeConfig[breakpoint].capHeight,
           fontMetrics: fontMetrics[breakpoint]
         });
-      } else {
-        result = valueMeta.value * capSizeConfig[breakpoint].fontSize;
-      }
-    } else if (valueMeta.unit === 'rem') {
-      // A unit-ed number is assumed to be a rem value
-      result = valueMeta.value * (theme.cappedText?.htmlFontSize ?? 16);
     } else {
-      throw Error(`Unable to handle ${propName} value. Got ${JSON.stringify(value)}. Expected rem or unitless value.`);
+      result = valueMeta.value * capSizeConfig[breakpoint].fontSize;
     }
+  } else if (valueMeta.unit === "rem") {
+    // A unit-ed number is assumed to be a rem value
+    result = valueMeta.value * (theme.cappedText?.htmlFontSize ?? 16);
+  } else {
+    throw Error(
+      `Unable to handle ${propName} value. Got ${JSON.stringify(
+        value
+      )}. Expected rem or unitless value.`
+    );
+  }
 
-    return result;
-  };
+  return result;
+};
 
 const calculateResponsiveValues = ({
   theme,
@@ -118,7 +138,11 @@ const calculateResponsiveValues = ({
 }) => {
   const responsiveValue = responsivify(theme, props[propName]);
   if (responsiveValue?.base == null) {
-    throw new Error(`${propName} must specify a 'base' value when used responsively. Got ${JSON.stringify(props[propName])}`);
+    throw new Error(
+      `${propName} must specify a 'base' value when used responsively. Got ${JSON.stringify(
+        props[propName]
+      )}`
+    );
   }
 
   let result = {};
@@ -128,10 +152,15 @@ const calculateResponsiveValues = ({
       theme,
       key: themeKey,
       breakpoint,
-      value: responsiveValue,
+      value: responsiveValue
     });
 
-    result[breakpoint] = cssConverter({ theme, value: concreteValue, propName, breakpoint });
+    result[breakpoint] = cssConverter({
+      theme,
+      value: concreteValue,
+      propName,
+      breakpoint
+    });
   }
 
   return result;
@@ -149,15 +178,15 @@ const simplifyResponsiveValues = ({ theme, value, collapseBase = false }) => {
 
   for (let i = 1; i < breakpointKeys.length; i++) {
     // Skip breakpoints that aren't set
-    if (typeof responsiveValue[breakpointKeys[i]] === 'undefined') {
+    if (typeof responsiveValue[breakpointKeys[i]] === "undefined") {
       continue;
     }
     const valueForBreakpoint = responsiveValue[breakpointKeys[i]];
     if (
       // Skip 'null' values (but not 'undefined')
-      valueForBreakpoint !== null
+      valueForBreakpoint !== null &&
       // We've hit a new value
-      && !deepEqual(valueForBreakpoint, lastValueSet)
+      !deepEqual(valueForBreakpoint, lastValueSet)
     ) {
       lastValueSet = valueForBreakpoint;
       result[breakpointKeys[i]] = lastValueSet;
@@ -165,11 +194,11 @@ const simplifyResponsiveValues = ({ theme, value, collapseBase = false }) => {
   }
 
   if (
-    collapseBase
+    collapseBase &&
     // When there's only a single item
-    && Object.keys(result).length === 1
+    Object.keys(result).length === 1 &&
     // And that item is the 'base'
-    && typeof result[breakpointKeys[0]] !== 'undefined'
+    typeof result[breakpointKeys[0]] !== "undefined"
   ) {
     // Just return that raw item on its own
     return result[breakpointKeys[0]];
@@ -178,7 +207,7 @@ const simplifyResponsiveValues = ({ theme, value, collapseBase = false }) => {
   return result;
 };
 
-const useCappedText = (props) => {
+const useCappedText = props => {
   const theme = useTheme();
   const { __breakpoints } = theme;
 
@@ -195,24 +224,30 @@ const useCappedText = (props) => {
     const responsiveFontFamily = responsivify(theme, props.fontFamily);
     const fontFamilyForBreakpoint = detokenize({
       theme,
-      key: 'fonts',
+      key: "fonts",
       breakpoint,
       value: responsiveFontFamily
-    })
+    });
 
     // Determine the font family in use by splitting the css string
     // TODO: How do we handle comments, newlines, etc?
-    const fontFamilies = fontFamilyForBreakpoint.split(',').map(family => family.trim()).filter(Boolean);
+    const fontFamilies = fontFamilyForBreakpoint
+      .split(",")
+      .map(family => family.trim())
+      .filter(Boolean);
 
     // Try to find the first font family we've got metrics for
-    const fontFamily = fontFamilies.find(family => !!theme.cappedText.fontMetrics[family]);
+    const fontFamily = fontFamilies.find(
+      family => !!theme.cappedText.fontMetrics[family]
+    );
 
     if (!fontFamily) {
-      throw new Error(`Unable to determine font metrics for the given family: "${props.fontFamily}". Ensure the theme.cappedText.fontMetrics object is setup and the keys match the font families`);
+      throw new Error(
+        `Unable to determine font metrics for the given family: "${props.fontFamily}". Ensure the theme.cappedText.fontMetrics object is setup and the keys match the font families`
+      );
     }
 
     fontMetrics[breakpoint] = theme.cappedText.fontMetrics[fontFamily];
-
   }
 
   // Initialise the config needed to pass to capSize for each breakpoint
@@ -222,12 +257,12 @@ const useCappedText = (props) => {
     };
   }
 
-  const useCapHeight = typeof props.capHeight !== 'undefined';
-  const useFontSize = !useCapHeight && typeof props.fontSize !== 'undefined';
+  const useCapHeight = typeof props.capHeight !== "undefined";
+  const useFontSize = !useCapHeight && typeof props.fontSize !== "undefined";
 
-  const useLineGap = typeof props.lineGap !== 'undefined';
-  const useLeading = !useLineGap && typeof props.leading !== 'undefined';
-  const useLineHeight = !useLeading && typeof props.lineHeight !== 'undefined';
+  const useLineGap = typeof props.lineGap !== "undefined";
+  const useLeading = !useLineGap && typeof props.leading !== "undefined";
+  const useLineHeight = !useLeading && typeof props.lineHeight !== "undefined";
 
   // ------------------
   // Cap Height
@@ -238,8 +273,8 @@ const useCappedText = (props) => {
     const responsiveCapHeights = calculateResponsiveValues({
       theme,
       props,
-      propName: 'capHeight',
-      themeKey: 'capHeights',
+      propName: "capHeight",
+      themeKey: "capHeights"
     });
 
     for (let [breakpoint, capHeight] of Object.entries(responsiveCapHeights)) {
@@ -249,8 +284,8 @@ const useCappedText = (props) => {
     const responsiveFontSizes = calculateResponsiveValues({
       theme,
       props,
-      propName: 'fontSize',
-      themeKey: 'fontSizes',
+      propName: "fontSize",
+      themeKey: "fontSizes"
     });
 
     for (let [breakpoint, fontSize] of Object.entries(responsiveFontSizes)) {
@@ -259,7 +294,9 @@ const useCappedText = (props) => {
   } else {
     // Shouldn't happen thanks to our defaultProp, but there's still a
     // case where `fontSize={null}`, etc.
-    throw new Error(`One of fontSize or capHeight must be set on a cappedText component`);
+    throw new Error(
+      `One of fontSize or capHeight must be set on a cappedText component`
+    );
   }
 
   // ------------------
@@ -271,8 +308,8 @@ const useCappedText = (props) => {
     const responsiveLineGaps = calculateResponsiveValues({
       theme,
       props,
-      propName: 'lineGap',
-      themeKey: 'space',
+      propName: "lineGap",
+      themeKey: "space"
     });
 
     for (let [breakpoint, lineGap] of Object.entries(responsiveLineGaps)) {
@@ -282,8 +319,8 @@ const useCappedText = (props) => {
     const responsiveLeadings = calculateResponsiveValues({
       theme,
       props,
-      propName: 'leading',
-      themeKey: 'sizes',
+      propName: "leading",
+      themeKey: "sizes"
     });
 
     for (let [breakpoint, leading] of Object.entries(responsiveLeadings)) {
@@ -293,15 +330,16 @@ const useCappedText = (props) => {
     const responsiveLineHeights = calculateResponsiveValues({
       theme,
       props,
-      propName: 'lineHeight',
-      themeKey: 'lineHeights',
-      cssConverter: convertCssToLineheightValue({ capSizeConfig, fontMetrics }),
+      propName: "lineHeight",
+      themeKey: "lineHeights",
+      cssConverter: convertCssToLineheightValue({ capSizeConfig, fontMetrics })
     });
 
-    for (let [breakpoint, lineHeight] of Object.entries(responsiveLineHeights)) {
+    for (let [breakpoint, lineHeight] of Object.entries(
+      responsiveLineHeights
+    )) {
       capSizeConfig[breakpoint].leading = lineHeight;
     }
-
   } else {
     const breakpointKeys = getBreakpointKeysArray(theme);
     // Default to a zero lineGap, allowing the developer to insert their
@@ -335,7 +373,7 @@ const useCappedText = (props) => {
   // NOTE: We iterate over __breakpoints.keys instead of
   // Object.keys(capSizeConfig) because order is important.
   for (let breakpoint of __breakpoints.keys) {
-    if (typeof capSizeConfig[breakpoint] === 'undefined') {
+    if (typeof capSizeConfig[breakpoint] === "undefined") {
       continue;
     }
 
@@ -376,7 +414,9 @@ const useCappedText = (props) => {
   // hit. So we can use Object.keys(capSizeConfig)
   for (let breakpoint of Object.keys(capSizeConfig)) {
     // Generate the correct styles for the breakpoint
-    capSizeStyleObjects[breakpoint] = createStyleObject(capSizeConfig[breakpoint]);
+    capSizeStyleObjects[breakpoint] = createStyleObject(
+      capSizeConfig[breakpoint]
+    );
   }
 
   // ---------------
@@ -400,15 +440,19 @@ const useCappedText = (props) => {
   //
   const result = {};
 
-  for (let [breakpoint, capSizeStyleObject] of Object.entries(capSizeStyleObjects)) {
+  for (let [breakpoint, capSizeStyleObject] of Object.entries(
+    capSizeStyleObjects
+  )) {
     // Then flatten it out into the result object
     for (let styleKey in capSizeStyleObject) {
       result[styleKey] = result[styleKey] || {};
-      if (typeof capSizeStyleObject[styleKey] === 'object') {
+      if (typeof capSizeStyleObject[styleKey] === "object") {
         // Pseudo selectos (`::before`, etc)
         for (let pseudoStyleKey in capSizeStyleObject[styleKey]) {
-          result[styleKey][pseudoStyleKey] = result[styleKey][pseudoStyleKey] || {};
-          result[styleKey][pseudoStyleKey][breakpoint] = capSizeStyleObject[styleKey][pseudoStyleKey];
+          result[styleKey][pseudoStyleKey] =
+            result[styleKey][pseudoStyleKey] || {};
+          result[styleKey][pseudoStyleKey][breakpoint] =
+            capSizeStyleObject[styleKey][pseudoStyleKey];
         }
       } else {
         // scalar values (`fontSize`, etc)
@@ -437,7 +481,7 @@ const useCappedText = (props) => {
       result[styleKey] = simplifyResponsiveValues({
         theme,
         value: result[styleKey],
-        collapseBase: true,
+        collapseBase: true
       });
     } else {
       // Pseudo selectors (`::before`, etc)
@@ -445,7 +489,7 @@ const useCappedText = (props) => {
         result[styleKey][pseudoStyleKey] = simplifyResponsiveValues({
           theme,
           value: result[styleKey][pseudoStyleKey],
-          collapseBase: true,
+          collapseBase: true
         });
       }
     }
@@ -454,63 +498,80 @@ const useCappedText = (props) => {
   return result;
 };
 
-const CappedEl = ({ elName, Tag, fontFamilyType, ...props }) => {
-  const { isTruncated, noOfLines, children } = props;
-  const styleConfig = useStyleConfig(elName, props);
-  const globalFontFamily = useToken('fonts', fontFamilyType);
-  const defaultProps = useTheme().components[elName]?.defaultProps;
-  const defaultFontFamily = defaultProps?.fontFamily ?? globalFontFamily;
-  const cappedStyles = useCappedText({
-    ...defaultProps,
-    fontFamily: defaultFontFamily,
-    ...styleConfig,
-    ...props
-  });
+const CappedEl = forwardRef(
+  ({ elName, Tag, fontFamilyType, truncatedRef, ...props }, ref) => {
+    const { isTruncated, noOfLines, children } = props;
+    const styleConfig = useStyleConfig(elName, props);
+    const globalFontFamily = useToken("fonts", fontFamilyType);
+    const defaultProps = useTheme().components[elName]?.defaultProps;
+    const defaultFontFamily = defaultProps?.fontFamily ?? globalFontFamily;
+    const cappedStyles = useCappedText({
+      ...defaultProps,
+      fontFamily: defaultFontFamily,
+      ...styleConfig,
+      ...props
+    });
 
-  const passthroughProps = omit(props, [
-    'isTruncated',
-    'noOfLines',
-    'capHeight',
-    'lineGap',
-    'leading',
-    'fontSize',
-    'lineHeight'
-  ])
+    const passthroughProps = omit(props, [
+      "isTruncated",
+      "noOfLines",
+      "capHeight",
+      "lineGap",
+      "leading",
+      "fontSize",
+      "lineHeight"
+    ]);
 
-  return (
-    <Tag
-      {...passthroughProps}
-      // Stop Chakra from looking up styles in the theme.components.Text object
-      // since we've already done that above.
-      // This allows us to pass custom styles while still leveraging the props
-      // the <Text> component would normally accept.
-      styleConfig={{}}
-      // The theme styels first, then `sx` prop, then calculated cappedStyles
-      sx={{ ...styleConfig, ...props.sx, ...cappedStyles }}
-    >
-      {isTruncated || noOfLines ? (
-        // The inner <span> is necessary to avoid accidentally cutting off
-        // ascenders / descenders when overflow: hidden is applied. In this way,
-        // the correct capsize values are applied to the wrapping element which
-        // is inherited by the <span>, but the overflow values are only applied
-        // to the inner <span>.
-        <Box as="span" {...{ isTruncated, noOfLines }} sx={isTruncated ? { display: 'block' } : {}}>
-          {children}
-        </Box>
-      ) : children}
-    </Tag>
-  );
-};
-
-export const CappedText = (props) => (
-  <CappedEl {...props} Tag={Text} elName="Text" fontFamilyType="body" />
+    return (
+      <Tag
+        ref={ref}
+        {...passthroughProps}
+        // Stop Chakra from looking up styles in the theme.components.Text object
+        // since we've already done that above.
+        // This allows us to pass custom styles while still leveraging the props
+        // the <Text> component would normally accept.
+        styleConfig={{}}
+        // The theme styels first, then `sx` prop, then calculated cappedStyles
+        sx={{ ...styleConfig, ...props.sx, ...cappedStyles }}
+      >
+        {isTruncated || noOfLines ? (
+          // The inner <span> is necessary to avoid accidentally cutting off
+          // ascenders / descenders when overflow: hidden is applied. In this way,
+          // the correct capsize values are applied to the wrapping element which
+          // is inherited by the <span>, but the overflow values are only applied
+          // to the inner <span>.
+          <Box
+            ref={truncatedRef}
+            as="span"
+            {...{ isTruncated, noOfLines }}
+            sx={isTruncated ? { display: "block" } : {}}
+          >
+            {children}
+          </Box>
+        ) : (
+          children
+        )}
+      </Tag>
+    );
+  }
 );
 
-export const CappedHeading = (props) => (
+export const CappedText = forwardRef((props, ref) => (
   <CappedEl
+    ref={ref}
+    {...props}
+    Tag={Text}
+    elName="Text"
+    fontFamilyType="body"
+  />
+));
+
+export const CappedHeading = forwardRef((props, ref) => (
+  <CappedEl
+    ref={ref}
     {...props}
     Tag={Heading}
     elName="Heading"
     fontFamilyType="heading"
   />
-);
+));
