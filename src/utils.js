@@ -1,17 +1,8 @@
-import React, { forwardRef } from "react";
-import {
-  Box,
-  Text,
-  Heading,
-  useTheme,
-  useToken,
-  useStyleConfig
-} from "@chakra-ui/react";
+import { useTheme } from "@chakra-ui/react";
 import { createStyleObject } from "@capsizecss/core";
 import memoizeOne from "memoize-one";
 import deepEqual from "lodash/isEqual";
 import pickBy from "lodash/pickBy";
-import omit from "lodash/omit";
 
 // From https://github.com/chakra-ui/chakra-ui/blob/684012d868516412e91eb390379ccf7698536345/packages/utils/src/breakpoint.ts#L6
 function analyzeCSSValue(value) {
@@ -207,7 +198,7 @@ const simplifyResponsiveValues = ({ theme, value, collapseBase = false }) => {
   return result;
 };
 
-const useCappedText = props => {
+export const useCappedText = props => {
   const theme = useTheme();
   const { __breakpoints } = theme;
 
@@ -497,81 +488,3 @@ const useCappedText = props => {
 
   return result;
 };
-
-const CappedEl = forwardRef(
-  ({ elName, Tag, fontFamilyType, truncatedRef, ...props }, ref) => {
-    const { isTruncated, noOfLines, children } = props;
-    const styleConfig = useStyleConfig(elName, props);
-    const globalFontFamily = useToken("fonts", fontFamilyType);
-    const defaultProps = useTheme().components[elName]?.defaultProps;
-    const defaultFontFamily = defaultProps?.fontFamily ?? globalFontFamily;
-    const cappedStyles = useCappedText({
-      ...defaultProps,
-      fontFamily: defaultFontFamily,
-      ...styleConfig,
-      ...props
-    });
-
-    const passthroughProps = omit(props, [
-      "isTruncated",
-      "noOfLines",
-      "capHeight",
-      "lineGap",
-      "leading",
-      "fontSize",
-      "lineHeight"
-    ]);
-
-    return (
-      <Tag
-        ref={ref}
-        {...passthroughProps}
-        // Stop Chakra from looking up styles in the theme.components.Text object
-        // since we've already done that above.
-        // This allows us to pass custom styles while still leveraging the props
-        // the <Text> component would normally accept.
-        styleConfig={{}}
-        // The theme styels first, then `sx` prop, then calculated cappedStyles
-        sx={{ ...styleConfig, ...props.sx, ...cappedStyles }}
-      >
-        {isTruncated || noOfLines ? (
-          // The inner <span> is necessary to avoid accidentally cutting off
-          // ascenders / descenders when overflow: hidden is applied. In this way,
-          // the correct capsize values are applied to the wrapping element which
-          // is inherited by the <span>, but the overflow values are only applied
-          // to the inner <span>.
-          <Box
-            ref={truncatedRef}
-            as="span"
-            {...{ isTruncated, noOfLines }}
-            sx={isTruncated ? { display: "block" } : {}}
-          >
-            {children}
-          </Box>
-        ) : (
-          children
-        )}
-      </Tag>
-    );
-  }
-);
-
-export const CappedText = forwardRef((props, ref) => (
-  <CappedEl
-    ref={ref}
-    {...props}
-    Tag={Text}
-    elName="Text"
-    fontFamilyType="body"
-  />
-));
-
-export const CappedHeading = forwardRef((props, ref) => (
-  <CappedEl
-    ref={ref}
-    {...props}
-    Tag={Heading}
-    elName="Heading"
-    fontFamilyType="heading"
-  />
-));
