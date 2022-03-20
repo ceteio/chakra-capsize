@@ -1,4 +1,5 @@
 {
   "main": "dist/ceteio-chakra-capsize-theme.cjs.js",
-  "module": "dist/ceteio-chakra-capsize-theme.esm.js"
+  "module": "dist/ceteio-chakra-capsize-theme.esm.js",
+  "types": "dist/ceteio-chakra-capsize-theme.cjs.d.ts"
 }
